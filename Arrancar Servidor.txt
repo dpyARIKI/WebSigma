@@ -1,0 +1,9 @@
+POWERSHELL 1
+cd C:\Users\Daniel\Documents\ChatGPT\WebSigma
+python app.py
+
+POWERSHELL 2
+cloudflared tunnel --url http://localhost:8000
+
+BROWSER
+URL generated in POWERSHELL 2

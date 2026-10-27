@@ -1,0 +1,12 @@
+Añadir imagen de marcas al final del 03
+Tamaño de letra 02 == al 03
+? Tabulado del 01 == al 02
+
+Dejar un solo apartado (el 01 pero sin el numero) en el punto 02 / Nuestra Solucion, es decir eliminar el punto 02.
+
+permite etiquetas tipo <b> en los textos
+
+No se actualiza, cambie la imagen, reinicie y sigue saliendo la anterior.
+Ademas el texto deberia
+
+Subir a Github

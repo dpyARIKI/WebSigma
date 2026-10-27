@@ -1,0 +1,731 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <title>SIGMA — Editor de Traducciones (Acceso Local)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d141e;
+      --surface: #15202e;
+      --surface-2: #1c2b3d;
+      --border: #26384e;
+      --text: #e2e8f0;
+      --text-muted: #8ba2bd;
+      --primary: #38bdf8;
+      --primary-hover: #0284c7;
+      --accent-green: #10b981;
+      --accent-green-hover: #059669;
+      --accent-amber: #f59e0b;
+      --code-bg: #0a0f16;
+      --radius: 8px;
+      font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Barra superior fija */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      z-index: 10;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: #fff;
+    }
+
+    .badge-local {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-green);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .badge-local::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-green);
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 7px 12px;
+      border-radius: var(--radius);
+      font-size: 0.88rem;
+      width: 260px;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .search-box:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+    }
+
+    .section-select {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 7px 12px;
+      border-radius: var(--radius);
+      font-size: 0.88rem;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .section-select:focus {
+      border-color: var(--primary);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      border-radius: var(--radius);
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn-save {
+      background: var(--accent-green);
+      color: #fff;
+    }
+
+    .btn-save:hover:not(:disabled) {
+      background: var(--accent-green-hover);
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+    }
+
+    .btn-save:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: var(--surface-2);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      color: var(--text);
+      border-color: var(--text-muted);
+    }
+
+    .status-toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--surface-2);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: var(--radius);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--border);
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      z-index: 100;
+      animation: slideUp 0.2s ease-out;
+    }
+
+    .status-toast.success {
+      border-left: 4px solid var(--accent-green);
+    }
+
+    .status-toast.error {
+      border-left: 4px solid #ef4444;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(12px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Contenedor de la tabla */
+    .table-container {
+      flex: 1;
+      overflow: auto;
+      padding: 0;
+      background: var(--bg);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.86rem;
+      min-width: 1300px;
+    }
+
+    th {
+      background: var(--surface);
+      color: var(--text);
+      font-weight: 600;
+      text-align: left;
+      padding: 12px 14px;
+      border-bottom: 2px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      box-shadow: 0 1px 0 var(--border);
+    }
+
+    th.col-key {
+      width: 240px;
+      min-width: 240px;
+      position: sticky;
+      left: 0;
+      z-index: 6;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+    }
+
+    th.col-lang {
+      min-width: 200px;
+      border-right: 1px solid rgba(38, 56, 78, 0.5);
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.1s ease;
+    }
+
+    tbody tr:hover {
+      background: rgba(28, 43, 61, 0.4);
+    }
+
+    tbody tr.is-dirty {
+      background: rgba(245, 158, 11, 0.08);
+    }
+
+    tbody tr.is-dirty td.td-key::after {
+      content: "•";
+      color: var(--accent-amber);
+      font-size: 1.4rem;
+      line-height: 0;
+      position: absolute;
+      right: 8px;
+      top: 50%;
+    }
+
+    td {
+      padding: 8px 10px;
+      vertical-align: top;
+      border-right: 1px solid rgba(38, 56, 78, 0.5);
+    }
+
+    td.td-key {
+      position: sticky;
+      left: 0;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      z-index: 2;
+    }
+
+    tbody tr:hover td.td-key {
+      background: #192738;
+    }
+
+    .key-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 4px;
+      letter-spacing: 0.04em;
+    }
+
+    .key-name {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.8rem;
+      color: #e2e8f0;
+      word-break: break-all;
+      line-height: 1.35;
+    }
+
+    .key-desc {
+      font-size: 0.73rem;
+      color: #94a3b8;
+      margin-top: 4px;
+      line-height: 1.3;
+    }
+
+    .i18n-textarea {
+      width: 100%;
+      background: var(--surface-2);
+      color: var(--text);
+      border: 1px solid transparent;
+      border-radius: 4px;
+      padding: 6px 8px;
+      font-size: 0.85rem;
+      font-family: inherit;
+      line-height: 1.4;
+      resize: vertical;
+      min-height: 48px;
+      height: 48px;
+      outline: none;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .i18n-textarea:hover {
+      border-color: rgba(56, 189, 248, 0.3);
+    }
+
+    .i18n-textarea:focus {
+      background: #101c29;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+    }
+
+    .i18n-textarea.modified {
+      border-color: var(--accent-amber);
+      background: rgba(245, 158, 11, 0.05);
+    }
+
+    /* Barra de conteo inferior */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 8px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .shortcut-hint {
+      color: var(--text-muted);
+    }
+
+    .shortcut-hint kbd {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 6px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.75rem;
+    }
+  </style>
+  <script src="translations.js"></script>
+</head>
+<body>
+
+  <header>
+    <div class="brand-group">
+      <h1 class="brand-title">SIGMA — Editor de Traducciones</h1>
+      <span class="badge-local">Exclusivo localhost (127.0.0.1)</span>
+    </div>
+
+    <div class="controls">
+      <input type="search" id="filter-search" class="search-box" placeholder="🔍 Buscar clave o texto...">
+      
+      <select id="filter-section" class="section-select">
+        <option value="all">Todas las secciones</option>
+        <option value="hero">Portada / Hero (hero.*)</option>
+        <option value="intro">01 / El enfoque (intro.*)</option>
+        <option value="solutions">02 / Soluciones (solutions.*)</option>
+        <option value="conditions">03 / Alcance (conditions.*)</option>
+        <option value="signature">Firma y Lema (signature.*)</option>
+        <option value="contact">04 / Contacto (contact.*)</option>
+        <option value="form">Formulario y Errores (form.*)</option>
+        <option value="nav">Navegación (nav.*)</option>
+        <option value="footer">Pie de página y QR (footer.*, qr.*)</option>
+        <option value="privacy">Política de Privacidad (privacy.*)</option>
+        <option value="page">Título / Metadatos (page.*)</option>
+      </select>
+
+      <button id="btn-save" class="btn btn-save" disabled>
+        💾 Guardar cambios
+      </button>
+      <button id="btn-reload" class="btn btn-secondary" title="Recargar traducciones desde el archivo">
+        ↺ Recargar
+      </button>
+    </div>
+  </header>
+
+  <div class="table-container">
+    <table id="translations-table">
+      <thead>
+        <tr>
+          <th class="col-key">Código / Clave</th>
+          <th class="col-lang">🇪🇸 Español (es)</th>
+          <th class="col-lang">🇦🇩 Català (ca)</th>
+          <th class="col-lang">🇬🇧 English (en)</th>
+          <th class="col-lang">🇮🇹 Italiano (it)</th>
+          <th class="col-lang">🇫🇷 Français (fr)</th>
+          <th class="col-lang">🇩🇪 Deutsch (de)</th>
+        </tr>
+      </thead>
+      <tbody id="table-body">
+        <tr>
+          <td colspan="7" style="text-align: center; padding: 40px; color: var(--text-muted);">
+            Cargando traducciones...
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <footer>
+    <div id="counter-info">Cargando...</div>
+    <div class="shortcut-hint">
+      Atajo: pulsa <kbd>Ctrl + S</kbd> para guardar
+    </div>
+  </footer>
+
+  <div id="status-toast" class="status-toast"></div>
+
+  <script>
+    const KEY_DESCRIPTIONS = {
+      "page.title": "🏷️ Texto de la pestaña del navegador (<title>)",
+      "page.description": "🔍 Meta-descripción para buscadores / Google",
+      "brand.label": "Etiqueta accesible de la marca SIGMA",
+      "brand.alt": "Texto alternativo imagen del logotipo",
+      "nav.label": "Accesibilidad menú de navegación",
+      "nav.approach": "Enlace del menú: Enfoque",
+      "nav.solutions": "Enlace del menú: Soluciones",
+      "nav.contact": "Enlace del menú: Contacto",
+      "nav.sigma": "Enlace del menú: SIGMA ↗",
+      "language.label": "Accesibilidad selector de idioma",
+      "hero.eyebrow": "Lema superior portada (Seguridad · Inteligencia...)",
+      "hero.title": "⭐️ TÍTULO PRINCIPAL EN PORTADA (H1 visible)",
+      "hero.summary": "Párrafo destacado bajo el título de portada",
+      "hero.cta": "Botón principal (Explorar soluciones ↓)",
+      "intro.label": "Número: 01 / El enfoque",
+      "intro.title": "Título sección 01 (Información del vehículo...)",
+      "intro.body": "Párrafo explicativo sección 01",
+      "solutions.label": "Número: 02 / Soluciones",
+      "solutions.title": "Título sección 02 (Dos ámbitos. Una tecnología...)",
+      "solutions.lea.kicker": "Subtítulo bloque LEAs / Autoridades",
+      "solutions.lea.title": "Título bloque LEAs (Seguridad e investigación)",
+      "solutions.lea.body": "Texto descriptivo bloque LEAs",
+      "solutions.fleets.kicker": "Subtítulo bloque Flotas / Seguros",
+      "solutions.fleets.title": "Título bloque Flotas (Localización y recuperación)",
+      "solutions.fleets.body": "Texto descriptivo bloque Flotas",
+      "conditions.label": "Número: 03 / Alcance del servicio",
+      "conditions.title": "Título sección 03 (La compatibilidad se comprueba...)",
+      "conditions.body": "Texto explicativo sección 03",
+      "signature.label": "Firma institucional (SIGMA Intelligence Group)",
+      "signature.title": "Lema institucional inferior",
+      "contact.label": "Número: 04 / Contacto",
+      "contact.title": "Título sección 04 (Hablemos.)",
+      "contact.intro": "Subtítulo del formulario de contacto",
+      "form.name": "Etiqueta campo: Nombre",
+      "form.email": "Etiqueta campo: Correo electrónico",
+      "form.company": "Etiqueta campo: Empresa",
+      "form.optional": "Texto: (opcional)",
+      "form.message": "Etiqueta campo: Mensaje",
+      "form.privacy": "Casilla consentimiento Política de Privacidad",
+      "form.marketing": "Casilla comunicaciones comerciales",
+      "form.submit": "Texto botón: Enviar consulta ↗",
+      "form.note": "Nota al pie del formulario",
+      "form.sending": "Aviso: Enviando consulta...",
+      "form.success": "Mensaje éxito al enviar la consulta",
+      "form.saved": "Aviso guardado local (sin envío SMTP)",
+      "form.network": "Error de red al enviar formulario",
+      "form.website": "Campo trampa anti-spam",
+      "form.error.required": "Mensaje campo obligatorio vacío",
+      "form.error.email": "Mensaje correo electrónico inválido",
+      "footer.tagline": "Lema institucional en pie de página",
+      "footer.qr": "Botón ventana emergente versión móvil",
+      "footer.top": "Botón volver arriba ↑",
+      "qr.close": "Botón cerrar diálogo QR",
+      "qr.alt": "Texto alternativo imagen QR",
+      "qr.body": "Instrucción: Escanea este código...",
+      "privacy.back": "Botón volver a SIGMA",
+      "privacy.title": "Título página Política de Privacidad",
+      "privacy.intro": "Introducción política de privacidad"
+    };
+
+    const LANGUAGES = ["es", "ca", "en", "it", "fr", "de"];
+    let originalData = {};
+    let currentData = {};
+    let isDirty = false;
+
+    const tableBody = document.querySelector("#table-body");
+    const filterSearch = document.querySelector("#filter-search");
+    const filterSection = document.querySelector("#filter-section");
+    const btnSave = document.querySelector("#btn-save");
+    const btnReload = document.querySelector("#btn-reload");
+    const counterInfo = document.querySelector("#counter-info");
+    const statusToast = document.querySelector("#status-toast");
+
+    function showToast(message, type = "success") {
+      statusToast.textContent = message;
+      statusToast.className = `status-toast ${type}`;
+      statusToast.style.display = "flex";
+      setTimeout(() => {
+        statusToast.style.display = "none";
+      }, 4000);
+    }
+
+    function getSection(key) {
+      const prefix = key.split(".")[0];
+      if (prefix === "qr") return "footer";
+      return prefix;
+    }
+
+    async function loadTranslations() {
+      try {
+        const res = await fetch("/translations.json?v=" + Date.now(), { cache: "no-store" });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const json = await res.json();
+        originalData = JSON.parse(JSON.stringify(json));
+        currentData = JSON.parse(JSON.stringify(json));
+        isDirty = false;
+        updateSaveButton();
+        renderTable();
+        return;
+      } catch (err) {
+        if (window.SIGMA_TRANSLATIONS && Object.keys(window.SIGMA_TRANSLATIONS).length > 0) {
+          const json = window.SIGMA_TRANSLATIONS;
+          originalData = JSON.parse(JSON.stringify(json));
+          currentData = JSON.parse(JSON.stringify(json));
+          isDirty = false;
+          updateSaveButton();
+          renderTable();
+          showToast("Cargado desde respaldo translations.js", "success");
+          return;
+        }
+        tableBody.innerHTML = `<tr><td colspan="7" style="color: #ef4444; padding: 40px; text-align: center;">Error al cargar datos: ${err.message}</td></tr>`;
+      }
+    }
+
+    function getAllKeys() {
+      const keys = new Set();
+      LANGUAGES.forEach(lang => {
+        if (currentData[lang]) {
+          Object.keys(currentData[lang]).forEach(k => keys.add(k));
+        }
+      });
+      return Array.from(keys);
+    }
+
+    function updateSaveButton() {
+      btnSave.disabled = !isDirty;
+      if (isDirty) {
+        btnSave.style.boxShadow = "0 0 14px rgba(245, 158, 11, 0.4)";
+      } else {
+        btnSave.style.boxShadow = "none";
+      }
+    }
+
+    function renderTable() {
+      const allKeys = getAllKeys();
+      const searchQuery = filterSearch.value.trim().toLowerCase();
+      const selectedSection = filterSection.value;
+
+      tableBody.innerHTML = "";
+      let visibleCount = 0;
+
+      allKeys.forEach(key => {
+        const section = getSection(key);
+
+        // Filtro por sección
+        if (selectedSection !== "all") {
+          if (selectedSection === "footer") {
+            if (section !== "footer" && section !== "qr") return;
+          } else if (selectedSection === "contact") {
+            if (section !== "contact") return;
+          } else if (selectedSection === "form") {
+            if (section !== "form") return;
+          } else if (section !== selectedSection) {
+            return;
+          }
+        }
+
+        // Filtro por búsqueda
+        if (searchQuery) {
+          const matchKey = key.toLowerCase().includes(searchQuery);
+          const matchText = LANGUAGES.some(lang => {
+            const val = currentData[lang]?.[key] || "";
+            return val.toLowerCase().includes(searchQuery);
+          });
+          if (!matchKey && !matchText) return;
+        }
+
+        visibleCount++;
+        const row = document.createElement("tr");
+        row.dataset.key = key;
+
+        // Comprobar si esta fila tiene cambios
+        const rowIsDirty = LANGUAGES.some(lang => (currentData[lang]?.[key] ?? "") !== (originalData[lang]?.[key] ?? ""));
+        if (rowIsDirty) row.classList.add("is-dirty");
+
+        // Celda Clave
+        const tdKey = document.createElement("td");
+        tdKey.className = "td-key";
+        const desc = KEY_DESCRIPTIONS[key] || "";
+        tdKey.innerHTML = `
+          <span class="key-badge">${section}</span>
+          <div class="key-name">${key}</div>
+          ${desc ? `<div class="key-desc">${desc}</div>` : ""}
+        `;
+        row.appendChild(tdKey);
+
+        // Celdas por idioma
+        LANGUAGES.forEach(lang => {
+          const td = document.createElement("td");
+          const val = currentData[lang]?.[key] ?? "";
+          const origVal = originalData[lang]?.[key] ?? "";
+          const textarea = document.createElement("textarea");
+          textarea.className = "i18n-textarea";
+          if (val !== origVal) textarea.classList.add("modified");
+          textarea.value = val;
+
+          // Ajuste de altura inicial
+          if (val.length > 120) {
+            textarea.style.height = "76px";
+          }
+          if (val.length > 250) {
+            textarea.style.height = "110px";
+          }
+
+          textarea.addEventListener("input", (e) => {
+            const newVal = e.target.value;
+            if (!currentData[lang]) currentData[lang] = {};
+            currentData[lang][key] = newVal;
+
+            if (newVal !== origVal) {
+              textarea.classList.add("modified");
+            } else {
+              textarea.classList.remove("modified");
+            }
+
+            const rowHasDirty = LANGUAGES.some(l => (currentData[l]?.[key] ?? "") !== (originalData[l]?.[key] ?? ""));
+            row.classList.toggle("is-dirty", rowHasDirty);
+
+            checkGlobalDirty();
+          });
+
+          td.appendChild(textarea);
+          row.appendChild(td);
+        });
+
+        tableBody.appendChild(row);
+      });
+
+      counterInfo.textContent = `Mostrando ${visibleCount} de ${allKeys.length} códigos`;
+    }
+
+    function checkGlobalDirty() {
+      const allKeys = getAllKeys();
+      isDirty = allKeys.some(key =>
+        LANGUAGES.some(lang => (currentData[lang]?.[key] ?? "") !== (originalData[lang]?.[key] ?? ""))
+      );
+      updateSaveButton();
+    }
+
+    async function saveChanges() {
+      if (!isDirty) return;
+      btnSave.disabled = true;
+      btnSave.textContent = "Guardando...";
+
+      try {
+        const res = await fetch("/api/admin/guardar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ translations: currentData })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Error al guardar");
+
+        originalData = JSON.parse(JSON.stringify(currentData));
+        isDirty = false;
+        updateSaveButton();
+        renderTable();
+        showToast("✅ Cambios guardados y sincronizados con éxito", "success");
+      } catch (err) {
+        showToast("❌ Error al guardar: " + err.message, "error");
+        updateSaveButton();
+      } finally {
+        btnSave.textContent = "💾 Guardar cambios";
+      }
+    }
+
+    filterSearch.addEventListener("input", renderTable);
+    filterSection.addEventListener("change", renderTable);
+    btnSave.addEventListener("click", saveChanges);
+    btnReload.addEventListener("click", () => {
+      if (isDirty && !confirm("Hay cambios sin guardar. ¿Deseas descartarlos y recargar?")) return;
+      loadTranslations();
+    });
+
+    window.addEventListener("keydown", (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
+        e.preventDefault();
+        if (isDirty) saveChanges();
+      }
+    });
+
+    window.addEventListener("beforeunload", (e) => {
+      if (isDirty) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    });
+
+    loadTranslations();
+  </script>
+</body>
+</html>
+

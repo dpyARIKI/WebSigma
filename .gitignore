@@ -1,0 +1,20 @@
+# Datos sensibles y configuración local
+/datos/contactos.jsonl
+/smtp.ini
+
+# Backups
+*.bak
+index.html_bak.html
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+
+# Editor
+.vscode/
+
+# OS
+Thumbs.db
+.DS_Store
