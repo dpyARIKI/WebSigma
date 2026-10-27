@@ -44,6 +44,8 @@ SERVED_FILES = {
     "/Recursos/Fondos/Transporte.jpg",
     "/SIGMA_Quick_Tunnel_QR.png",
     "/Recursos/Centro_Control.png",
+    "/Recursos/2.png",
+    "/Recursos/3.png",
 }
 
 
