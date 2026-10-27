@@ -46,6 +46,8 @@ SERVED_FILES = {
     "/Recursos/Centro_Control.png",
     "/Recursos/2.png",
     "/Recursos/3.png",
+    "/Recursos/Marcas.png",
+    "/Recursos/Flechas.png"
 }
 
 

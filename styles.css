@@ -280,6 +280,7 @@ h1 {
 .areas-heading h2,
 .conditions h2,
 .signature h2 {
+  text-align: left;
   margin: 0;
   font-size: 42px;
   line-height: 1.2;
@@ -363,41 +364,48 @@ h1 {
 
 .conditions {
   padding: 85px max(9vw, calc((100vw - 1120px) / 2));
-  display: grid;
-  grid-template-columns: .62fr 1.38fr;
-  gap: 50px;
-  align-items: stretch;
-}
-
-.conditions-media {
   display: flex;
   flex-direction: column;
+  gap: 40px;
 }
 
-.conditions-media img {
-  display: block;
+.conditions-copy {
   width: 100%;
-  flex: 1;
-  object-fit: cover;
-  border-radius: 4px;
-  opacity: 1 !important;
-  margin-top: 16px;
 }
 
 .conditions h2 {
   font-size: 42px;
   line-height: 1.2;
   font-weight: 600;
+  margin: 0 0 22px;
 }
 
-.conditions div > p,
 .conditions-copy > p {
-  max-width: 660px;
-  margin: 22px 0 0;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
   color: var(--ink-soft);
   font-size: 15px;
   line-height: 1.9;
   text-align: justify;
+}
+
+.conditions-media-centered {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.conditions-media-centered img {
+  display: block;
+  max-width: 100%;
+  width: auto;
+  max-height: 240px;
+  height: auto;
+  object-fit: contain;
+  margin: 0 auto;
 }
 
 .signature {
@@ -409,6 +417,28 @@ h1 {
   align-items: center;
   position: relative;
   overflow: hidden;
+  margin-left: 0;
+}
+
+.signature-header {
+  position: relative;
+  z-index: 2;
+}
+
+.signature-title {
+  margin: 0;
+}
+
+.signature-body {
+  display: flex;
+  align-items: flex-end; /* Centra verticalmente ambos elementos */
+  justify-content: flex-start;
+  gap: 15px; /* Controla la distancia exacta entre la imagen y el texto (puedes cambiar los píxeles) */
+}
+
+.signature-body img {
+  width: 100px; /* Ajusta según lo que necesites */
+  height: auto;
 }
 
 .signature .section-label {
@@ -418,6 +448,7 @@ h1 {
 .signature h2 {
   max-width: 690px;
   font-size: 34px;
+  margin: 0;
 }
 
 .signature-word {
@@ -431,6 +462,27 @@ h1 {
 
 .signature-word span {
   color: var(--blue);
+}
+
+.signature-media-centered {
+  grid-column: 1 / -1;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 30px;
+  position: relative;
+  z-index: 2;
+}
+
+.signature-media-centered img {
+  display: block;
+  max-width: 100%;
+  width: auto;
+  max-height: 200px;
+  height: auto;
+  object-fit: contain;
+  margin: 0 auto;
 }
 
 .site-footer {
@@ -845,9 +897,12 @@ h1 {
     padding: 76px 7vw;
   }
 
-  .intro,
-  .conditions {
+    .intro {
     grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .conditions {
     gap: 24px;
   }
 
