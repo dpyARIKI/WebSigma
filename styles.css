@@ -264,40 +264,8 @@ h1 {
   color: #80aff4;
 }
 
-.intro {
-  padding: 112px max(9vw, calc((100vw - 1120px) / 2)) 120px;
-  display: grid;
-  grid-template-columns: .62fr 1.38fr;
-  gap: 50px;
-  align-items: stretch;
-}
-
 .section-label {
   color: var(--blue);
-}
-
-.intro-copy h2,
-.areas-heading h2,
-.conditions h2,
-.signature h2 {
-  text-align: left;
-  margin: 0;
-  font-size: 42px;
-  line-height: 1.2;
-  font-weight: 600;
-}
-
-.intro-copy h2 span, .conditions-copy h2 span, .conditions h2 span {
-  color: #718090;
-}
-
-.intro-copy > p {
-  max-width: 660px;
-  margin: 22px 0 0;
-  color: var(--ink-soft);
-  font-size: 15px;
-  line-height: 1.9;
-  text-align: justify;
 }
 
 .areas {
@@ -312,8 +280,6 @@ h1 {
   justify-content: space-between;
   gap: 30px;
 }
-
-
 
 .area-item {
   min-height: 174px;
@@ -890,18 +856,6 @@ h1 {
     bottom: 21px;
   }
 
-  .intro,
-  .areas,
-  .conditions,
-  .contact {
-    padding: 76px 7vw;
-  }
-
-    .intro {
-    grid-template-columns: 1fr;
-    gap: 24px;
-  }
-
   .conditions {
     gap: 24px;
   }
@@ -909,13 +863,6 @@ h1 {
   .contact {
     grid-template-columns: 1fr;
     gap: 32px;
-  }
-
-  .intro-copy h2,
-  .areas-heading h2,
-  .conditions h2,
-  .signature h2 {
-    font-size: 30px;
   }
 
   .areas-heading {
@@ -1010,54 +957,80 @@ h1 {
   }
 }
 
-
-
-
 /* --- Intro sections: shared image + reversed layout --- */
 
-.intro-media {
-  display: flex;
-  flex-direction: column;
-}
-
-.intro-media img {
-  display: block;
-  width: 100%;
-  flex: 1;
-  object-fit: cover;
-  border-radius: 4px;
-  opacity: 1 !important;
-  margin-top: 16px;
-}
-
-.intro--reversed {
-  grid-template-columns: 1.15fr 0.85fr;
-  align-items: center;
-  background: var(--paper);
-}
-
-.intro--reversed .intro-media {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-}
-
-.intro--reversed .intro-media img {
-  margin-top: 0;
+.solutions-media img {
+  margin-top: 30px;
   width: 100%;
   max-width: 540px;
   max-height: 100%;
   height: auto;
-  object-fit: contain;
+  object-fit: cover;
   box-shadow: 0 10px 30px rgba(16, 28, 41, 0.08);
   border: 1px solid rgba(220, 227, 233, 0.6);
-  border-radius: 6px;
+  border-radius: 4px;
+  flex: 1;
+  opacity: 1 !important;
 }
 
+/* ==========================================
+   1. ESTRUCTURA GENERAL (Grid con estiramiento)
+   ========================================== */
+.intro {
+  padding: 112px max(9vw, calc((100vw - 1120px) / 2)) 120px;
+  display: grid;
+  grid-template-columns: .62fr 1.38fr;
+  gap: 50px;
+  align-items: stretch;
+}
 
+/* ==========================================
+   2. SECCIÓN 2 INVERTIDA (Texto izquierda, Imagen derecha)
+   ========================================== */
+.intro--reversed {
+  grid-template-columns: 1.15fr 0.85fr;
+  align-items: stretch;
+  background: var(--paper);
+}
 
-/* Garantizar estilo idéntico de section-label en todas las secciones */
+/* Orden visual para la sección 2 en escritorio */
+.intro--reversed .intro-copy {
+  grid-column: 1;
+}
+.intro--reversed .solutions-media {
+  grid-column: 2;
+}
+
+/* ==========================================
+   3. TIPOGRAFÍA Y TEXTOS
+   ========================================== */
+.intro-copy h2,
+.areas-heading h2,
+.conditions h2,
+.signature h2 {
+  text-align: left;
+  margin: 0;
+  margin-top: 10px;
+  font-size: 42px;
+  line-height: 1.2;
+  font-weight: 600;
+}
+
+.intro-copy h2 span, 
+.conditions-copy h2 span, 
+.conditions h2 span {
+  color: #718090;
+}
+
+.intro-copy > p {
+  max-width: 760px;
+  margin: 22px 0 0;
+  color: var(--ink-soft);
+  font-size: 15px;
+  line-height: 1.9;
+  text-align: justify;
+}
+
 .section-label,
 .intro .section-label,
 .intro-copy .section-label,
@@ -1074,4 +1047,71 @@ p[data-i18n$=".label"] {
   text-transform: uppercase !important;
   line-height: 1.5 !important;
   margin-top: 0 !important;
+}
+
+/* ==========================================
+   4. CONTENEDORES Y EFECTO DE IMÁGENES
+   ========================================== */
+.intro-media,
+.solutions-media {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.intro-media img,
+.solutions-media img {
+  display: block;
+  width: 100%;
+  flex: 1;
+  object-fit: cover;
+  opacity: 1 !important;
+  border-radius: 6px;
+  box-shadow: 0 10px 30px rgba(16, 28, 41, 0.08);
+  border: 1px solid rgba(220, 227, 233, 0.6);
+  margin-top: 0;
+}
+
+/* Ajuste específico: Margen superior para alinear la imagen 2 con el título */
+.solutions-media img {
+  margin-top: 42px; /* Puedes subir o bajar este valor (ej: 38px o 45px) si lo quieres afinar al milímetro */
+}
+
+/* ==========================================
+   5. RESPONSIVE (Móviles / Pantallas pequeñas)
+   ========================================== */
+@media (max-width: 768px) {
+  .intro,
+  .intro--reversed,
+  .areas,
+  .conditions,
+  .contact {
+    padding: 76px 7vw;
+  }
+
+  .intro,
+  .intro--reversed {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .intro--reversed .intro-copy,
+  .intro--reversed .solutions-media {
+    grid-column: auto;
+  }
+
+  .intro-copy h2,
+  .areas-heading h2,
+  .conditions h2,
+  .signature h2 {
+    font-size: 30px;
+  }
+
+  .intro-media img,
+  .solutions-media img {
+    flex: unset;
+    height: auto;
+    object-fit: contain;
+    margin-top: 0 !important; /* Reseteamos el margen en móvil para que no desentone */
+  }
 }
