@@ -39,6 +39,7 @@ SERVED_FILES = {
     "/site.js",
     "/Recursos/SIGMA_Logo.png",
     "/Recursos/SIGMA_Logo_Mini.png",
+    "/Recursos/SIGMA_Logo_Mini2.png",
     "/Recursos/Fondos/Campa.jpg",
     "/Recursos/Fondos/Recuperacion.png",
     "/Recursos/Fondos/Transporte.jpg",
